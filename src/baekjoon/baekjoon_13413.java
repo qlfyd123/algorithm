@@ -42,10 +42,7 @@ public class baekjoon_13413 {
                 result++;
             }
 
-            while (diff >= 2) {
-                diff -= 2;
-                result++;
-            }
+            result+=diff/2;
 
             System.out.println(result);
         }
