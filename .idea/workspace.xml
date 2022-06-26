@@ -4,11 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="274f4bfd-e648-434e-ad7c-3c063e44b931" name="변경" comment="20220625" />
+    <list default="true" id="274f4bfd-e648-434e-ad7c-3c063e44b931" name="변경" comment="20220625">
+      <change afterPath="$PROJECT_DIR$/src/baekjoon/baekjoon_13413.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,8 +45,34 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
 }</component>
-  <component name="RunManager">
-    <configuration name="baekjoon_2828" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="애플리케이션.baekjoon_13413">
+    <configuration name="baekjoon_13413" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="baekjoon.baekjoon_13413" />
+      <module name="algorithm" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="baekjoon.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="baekjoon.baekjoon_1037" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="baekjoon.baekjoon_1037" />
+      <module name="algorithm" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="baekjoon.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="baekjoon.baekjoon_2828" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="baekjoon.baekjoon_2828" />
       <module name="algorithm" />
       <extension name="coverage">
@@ -51,7 +87,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="애플리케이션.baekjoon_2828" />
+        <item itemvalue="애플리케이션.baekjoon_13413" />
+        <item itemvalue="애플리케이션.baekjoon.baekjoon_1037" />
+        <item itemvalue="애플리케이션.baekjoon.baekjoon_2828" />
       </list>
     </recent_temporary>
   </component>
