@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class Main {
+public class baekjoon_11000 {
     public static class ClassTable implements Comparable<ClassTable> {
         final int start;
         final int end;
@@ -22,9 +22,9 @@ public class Main {
         @Override
         public int compareTo(ClassTable c) {
             if (this.start == c.start) {
-                return this.end - c.end;
+                return c.end-this.end;
             } else {
-                return this.start - c.start;
+                return this.start-c.start;
             }
         }
 
@@ -48,9 +48,9 @@ public class Main {
         }
 
         Collections.sort(lecture);
-        Queue<Integer> timeTable = new LinkedList<>();
+        Queue<Integer> timeTable = new PriorityQueue<>();
         for (ClassTable c : lecture) {
-            if (!timeTable.isEmpty() && c.start >= timeTable.peek()) {
+            if (!timeTable.isEmpty()&&c.start>=timeTable.peek()) {
                 timeTable.poll();
             }
             timeTable.add(c.end);
