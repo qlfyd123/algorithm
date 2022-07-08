@@ -7,10 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class Main {
+public class baekjoon_1083 {
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
         List<Integer> A = new LinkedList<>();
@@ -31,16 +31,17 @@ public class Main {
                 int maxValueIndex = A.indexOf(max);
                 int indexValue = A.get(index);
                 A.add(index, max);
-                A.remove(index + 1);
-                A.add(maxValueIndex, indexValue);
                 A.remove(maxValueIndex + 1);
                 S -= maxValueIndex - index;
             }
             index++;
         }
 
+        StringBuffer sb=new StringBuffer();
         for(int i:A){
-            System.out.print(i+" ");
+            sb.append(i).append(" ");
         }
+
+        System.out.println(sb);
     }
 }
