@@ -20,31 +20,6 @@ public class Main {
         public static Oven ovenOf(int time) {
             return new Oven(time);
         }
-
-        public void ADDH() {
-            this.time += 60;
-            this.ADDHCount++;
-        }
-
-        public void ADDT() {
-            this.time += 10;
-            this.ADDTCount++;
-        }
-
-        public void MINT() {
-            this.time -= 10;
-            this.MINTCount++;
-        }
-
-        public void ADDO() {
-            this.time += 1;
-            this.ADDOCount++;
-        }
-
-        public void MINO() {
-            this.time -= 1;
-            this.MINOCount++;
-        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -54,11 +29,42 @@ public class Main {
 
         while (testCase-- > 0) {
             Oven oven = Oven.ovenOf(Integer.parseInt(br.readLine()));
-            while (oven.time != 0) {
-                if (oven.time >= ) {
-                    oven.ADDH();
-                }
+            int remain = oven.time % 60;
+            int remain2 = oven.time % 10;
+
+            oven.ADDHCount += oven.time / 60;
+
+            if (remain >= 40) {
+                oven.ADDHCount++;
+                oven.MINTCount += 6 - remain / 10;
+            } else {
+                oven.ADDTCount += remain / 10;
             }
+
+            if (remain2 > 5) {
+                oven.ADDTCount++;
+                oven.MINOCount += 10 - remain2;
+            } else {
+                oven.ADDOCount += remain2;
+            }
+
+            while (oven.ADDTCount > 0 && oven.MINTCount > 0) {
+                oven.ADDTCount--;
+                oven.MINTCount--;
+            }
+
+            String sb = oven.ADDHCount +
+                    " " +
+                    oven.ADDTCount +
+                    " " +
+                    oven.MINTCount +
+                    " " +
+                    oven.ADDOCount +
+                    " " +
+                    oven.MINOCount +
+                    " ";
+
+            System.out.println(sb);
         }
     }
 
