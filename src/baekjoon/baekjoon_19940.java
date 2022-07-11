@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main {
+public class baekjoon_19940 {
     static class Oven {
         int time;
         int ADDHCount = 0;
@@ -34,23 +34,32 @@ public class Main {
 
             oven.ADDHCount += oven.time / 60;
 
-            if (remain >= 40) {
+            if (remain / 10 >= 4) {
                 oven.ADDHCount++;
-                oven.MINTCount += 6 - remain / 10;
+                if (remain % 10 >= 5) {
+                    oven.MINTCount += 6 - remain / 10 - 1;
+                    oven.MINOCount += 10 - remain % 10;
+                } else {
+                    oven.MINTCount += 6 - remain / 10;
+                    oven.ADDOCount += remain % 10;
+                }
+            } else if (remain / 10 == 3) {
+                if (remain % 10 > 5) {
+                    oven.ADDHCount++;
+                    oven.MINTCount += 2;
+                    oven.MINOCount += 10 - remain % 10;
+                } else {
+                    oven.ADDTCount += 3;
+                    oven.ADDOCount += remain % 10;
+                }
             } else {
-                oven.ADDTCount += remain / 10;
-            }
-
-            if (remain2 > 5) {
-                oven.ADDTCount++;
-                oven.MINOCount += 10 - remain2;
-            } else {
-                oven.ADDOCount += remain2;
-            }
-
-            while (oven.ADDTCount > 0 && oven.MINTCount > 0) {
-                oven.ADDTCount--;
-                oven.MINTCount--;
+                if (remain % 10 > 5) {
+                    oven.ADDTCount += remain / 10 + 1;
+                    oven.MINOCount += 10 - remain % 10;
+                } else {
+                    oven.ADDTCount += remain / 10;
+                    oven.ADDOCount += remain % 10;
+                }
             }
 
             String sb = oven.ADDHCount +
@@ -61,11 +70,9 @@ public class Main {
                     " " +
                     oven.ADDOCount +
                     " " +
-                    oven.MINOCount +
-                    " ";
+                    oven.MINOCount;
 
             System.out.println(sb);
         }
     }
-
 }
