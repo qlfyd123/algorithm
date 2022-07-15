@@ -3,31 +3,31 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static class Meat implements Comparable<Meat> {
-        int price = 0;
+    static class Meat {
         int weight = 0;
+        int price = 0;
+        Queue<Integer> weightQueue = new PriorityQueue<>();
+
 
         private Meat(int weight, int price) {
-            this.price = price;
             this.weight = weight;
+            this.price = price;
+            weightQueue.add(weight);
+
         }
 
-        public static Meat MeetOf(int weight, int price) {
+        public static Meat MeetOf(int price, int weight) {
             return new Meat(weight, price);
         }
 
-
-        @Override
-        public int compareTo(Meat meat) {
-            if (meat.price == this.price) {
-                return meat.weight - this.weight;
-            } else {
-                return this.price - meat.price;
+        public void add(int weight) {
+            if (this.weight < weight) {
+                this.weight = weight;
             }
+            weightQueue.add(weight);
         }
     }
 
@@ -39,33 +39,40 @@ public class Main {
         int N = Integer.parseInt(st.nextToken());
         int needMeatWeight = Integer.parseInt(st.nextToken());
 
-        Meat[] meat = new Meat[N];
+        List<Meat> meat = new ArrayList<>();
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            meat[i] = Meat.MeetOf(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+            int weight = Integer.parseInt(st.nextToken());
+            int price = Integer.parseInt(st.nextToken());
+            if (meat[price] != null) {
+                meat[price].add(weight);
+            } else {
+                meat[price] = Meat.MeetOf(weight);
+            }
         }
-
-        Arrays.sort(meat);
-
-        int flag = 0;
         int totalWeight = 0;
-        int price = -1;
-        int priceTemp = 0;
-        int weightTemp = 0;
-        while (totalWeight <= needMeatWeight) {
-            if (flag == meat.length ) {
-                price = -1;
+        int price = 0;
+        outer:
+        for (int i = 0; i < 100000; i++) {
+            if (meat[i] != null) {
+                Meat meatTemp = meat[i];
+                int priceTemp = 0;
+                while (!meatTemp.weightQueue.isEmpty()) {
+                    totalWeight += meatTemp.weightQueue.poll();
+                    priceTemp += i;
+                    if (totalWeight >= needMeatWeight) {
+                        price = priceTemp;
+                        break outer;
+                    }
+                }
             }
-            if (priceTemp == flag) {
-                weightTemp += meat[flag].weight;
-            }
-            totalWeight += meat[flag].weight + weightTemp;
-            flag++;
-            price = meat[flag].price;
         }
 
-        double sale = meat[flag].weight / meat[flag].price;
-        System.out.println(price);
+        if (totalWeight >= needMeatWeight) {
+            System.out.println(price);
+        } else {
+            System.out.println(-1);
+        }
     }
 
 }
