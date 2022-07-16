@@ -7,9 +7,9 @@ import java.util.*;
 
 public class Main {
     static class Meat {
-        int weight = 0;
-        int price = 0;
-        Queue<Integer> weightQueue = new PriorityQueue<>();
+        int weight;
+        int price;
+        Queue<Integer> weightQueue = new PriorityQueue<>(Collections.reverseOrder());
 
 
         private Meat(int weight, int price) {
@@ -39,40 +39,36 @@ public class Main {
         int N = Integer.parseInt(st.nextToken());
         int needMeatWeight = Integer.parseInt(st.nextToken());
 
-        List<Meat> meat = new ArrayList<>();
+
+        Map<Integer, Meat> meat = new HashMap<>();
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             int weight = Integer.parseInt(st.nextToken());
             int price = Integer.parseInt(st.nextToken());
-            if (meat[price] != null) {
-                meat[price].add(weight);
+            if (!meat.containsKey(price)) {
+                meat.put(price, Meat.MeetOf(price, weight));
             } else {
-                meat[price] = Meat.MeetOf(weight);
+                meat.get(price).add(weight);
             }
         }
         int totalWeight = 0;
-        int price = 0;
-        outer:
-        for (int i = 0; i < 100000; i++) {
-            if (meat[i] != null) {
-                Meat meatTemp = meat[i];
-                int priceTemp = 0;
-                while (!meatTemp.weightQueue.isEmpty()) {
-                    totalWeight += meatTemp.weightQueue.poll();
-                    priceTemp += i;
-                    if (totalWeight >= needMeatWeight) {
+        int price = -1;
+        for (Map.Entry<Integer, Meat> entry : meat.entrySet()) {
+            Meat meatTemp = entry.getValue();
+            int priceTemp = 0;
+            while (!meatTemp.weightQueue.isEmpty()) {
+                totalWeight += meatTemp.weightQueue.poll();
+                priceTemp += meatTemp.price;
+                if (totalWeight >= needMeatWeight) {
+                    if (price == -1) {
                         price = priceTemp;
-                        break outer;
+                    } else {
+                        price = Math.min(price, priceTemp);
                     }
+                    break;
                 }
             }
         }
-
-        if (totalWeight >= needMeatWeight) {
-            System.out.println(price);
-        } else {
-            System.out.println(-1);
-        }
+        System.out.println(price);
     }
-
 }
