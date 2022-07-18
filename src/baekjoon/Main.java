@@ -3,33 +3,15 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
+/*
+
+https://www.acmicpc.net/problem/2258
+
+*/
 public class Main {
-    static class Meat {
-        int weight;
-        int price;
-        Queue<Integer> weightQueue = new PriorityQueue<>(Collections.reverseOrder());
-
-
-        private Meat(int weight, int price) {
-            this.weight = weight;
-            this.price = price;
-            weightQueue.add(weight);
-
-        }
-
-        public static Meat MeetOf(int price, int weight) {
-            return new Meat(weight, price);
-        }
-
-        public void add(int weight) {
-            if (this.weight < weight) {
-                this.weight = weight;
-            }
-            weightQueue.add(weight);
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -40,35 +22,44 @@ public class Main {
         int needMeatWeight = Integer.parseInt(st.nextToken());
 
 
-        Map<Integer, Meat> meat = new HashMap<>();
+        int[][] meat = new int[N][2];
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int weight = Integer.parseInt(st.nextToken());
-            int price = Integer.parseInt(st.nextToken());
-            if (!meat.containsKey(price)) {
-                meat.put(price, Meat.MeetOf(price, weight));
+
+            meat[i][0] = Integer.parseInt(st.nextToken());
+            meat[i][1] = Integer.parseInt(st.nextToken());
+        }
+
+        Arrays.sort(meat, (o1, o2) -> {
+            if (o1[1] == o2[1]) {
+                return o2[0] - o1[0];
             } else {
-                meat.get(price).add(weight);
+                return o1[1] - o2[1];
             }
-        }
+        });
+
+
         int totalWeight = 0;
-        int price = -1;
-        for (Map.Entry<Integer, Meat> entry : meat.entrySet()) {
-            Meat meatTemp = entry.getValue();
-            int priceTemp = 0;
-            while (!meatTemp.weightQueue.isEmpty()) {
-                totalWeight += meatTemp.weightQueue.poll();
-                priceTemp += meatTemp.price;
-                if (totalWeight >= needMeatWeight) {
-                    if (price == -1) {
-                        price = priceTemp;
-                    } else {
-                        price = Math.min(price, priceTemp);
-                    }
-                    break;
-                }
+        int price = Integer.MAX_VALUE;
+        int priceTemp = 0;
+        boolean possible = false;
+        for (int i = 0; i < N; i++) {
+            totalWeight += meat[i][0];
+
+            if (i > 0 && meat[i][1] == meat[i - 1][1]) {
+                priceTemp += meat[i][1];
+            } else {
+                priceTemp = meat[i][1];
+            }
+            if (totalWeight >= needMeatWeight) {
+                price = Math.min(price, priceTemp);
             }
         }
-        System.out.println(price);
+
+        if (totalWeight < needMeatWeight) {
+            System.out.println(-1);
+        } else {
+            System.out.println(price);
+        }
     }
 }
