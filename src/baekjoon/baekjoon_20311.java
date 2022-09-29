@@ -56,6 +56,7 @@ public class baekjoon_20311 {
                 i++;
             }
         }
+
         StringJoiner sj = new StringJoiner(" ");
         examiner.stream()
                 .flatMap(queue -> Stream.generate(queue::poll)
