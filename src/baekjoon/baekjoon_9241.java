@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main {
+/*
+ * https://www.acmicpc.net/problem/9241
+ * */
+public class baekjoon_9241 {
     static String before;
     static String after;
 
@@ -27,13 +30,13 @@ public class Main {
             leftIndex++;
         }
 
-        while (rightBeforeIndex > leftIndex & rightAfterIndex > leftIndex) {
+        while (rightBeforeIndex >= leftIndex & rightAfterIndex >= leftIndex) {
             if (before.charAt(rightBeforeIndex) != after.charAt(rightAfterIndex)) {
                 break;
             }
             rightBeforeIndex--;
             rightAfterIndex--;
         }
-        System.out.println(rightAfterIndex-leftIndex+1);
+        System.out.println(rightAfterIndex - leftIndex + 1);
     }
 }
