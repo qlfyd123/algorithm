@@ -3,48 +3,32 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int[] location = Stream.of(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .toArray();
-        int[] requireStickRange = IntStream.range(0, 3)
-                .map(value -> location[5 - value] - location[value])
-                .sorted()
-                .toArray();
-        boolean[] success = {false, false, false};
+        String[] location = br.readLine().split(" ");
+        double distanceBetween;
+        distanceBetween = Math.sqrt(IntStream.range(0, 3)
+                .map(value -> (int) Math.pow(Integer.parseInt(location[5 - value]) - Integer.parseInt(location[value]), 2))
+                .sum());
         int N = Integer.parseInt(br.readLine());
-        int[] stick = Stream.of(br.readLine().split(" "))
+
+        int[] sticks = Arrays.stream(br.readLine().split(" "))
                 .mapToInt(Integer::parseInt)
                 .sorted()
                 .toArray();
-        int stickRangeSum = 0;
-        int index = 2;
-        for (int i = stick.length - 1; i >= 0 & index >= 0; i--) {
-            if (stickRangeSum == 0) {
-                stickRangeSum = stick[i];
-            } else {
-                if (stickRangeSum == requireStickRange[index]) {
-                    stickRangeSum = 0;
-                    success[index] = true;
-                    index--;
-                } else if (stickRangeSum > requireStickRange[index]) {
-                    stickRangeSum -= stick[i];
-                } else {
-                    stickRangeSum += stick[i];
-                }
-            }
-        }
-        if (!success[0]) {
+
+        double stickLengthSum = 0;
+        for (int stick : sticks)
+            stickLengthSum += stick;
+
+        if (stickLengthSum < distanceBetween)
             System.out.println("NO");
-        } else {
-            System.out.println("YES");
-        }
-
-
+        else if (stickLengthSum - sticks[N - 1] + distanceBetween < sticks[N - 1])
+            System.out.println("NO");
+        else System.out.println("YES");
     }
 }
