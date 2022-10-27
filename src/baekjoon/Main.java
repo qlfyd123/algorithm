@@ -11,7 +11,6 @@ public class Main {
     static int K;
     static Map<Integer, Node> nodeMap = new HashMap<>();
     static boolean[] closedNode;
-    static int[] cost;
 
     static class Edge {
         int end;
@@ -59,13 +58,18 @@ public class Main {
             int w = Integer.parseInt(st.nextToken());
             nodeMap.get(u).addEdge(new Edge(v, w));
         }
-        closedNode = new boolean[V];
+        closedNode = new boolean[V + 1];
+        Arrays.fill(closedNode, false);
         nodeMap.get(K).cost = 0;
         closedNode[K] = true;
         Queue<Node> openNode = new PriorityQueue<>();
         openNode.add(nodeMap.get(K));
         for (int i = 0; i < V & !openNode.isEmpty(); i++) {
             Node currentNode = openNode.poll();
+            if (closedNode[currentNode.location]) {
+                i--;
+                continue;
+            }
             for (Edge neighbor : currentNode.edgeList) {
                 Node neighborNode = nodeMap.get(neighbor.end);
                 neighborNode.cost = Math.min(neighborNode.cost, neighbor.weight + currentNode.cost);
