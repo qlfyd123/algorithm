@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class Main {
+/**
+ *
+ * @see <a href="https://www.acmicpc.net/problem/1753">백준 1753</a>
+ */
+public class baekjoon_1753 {
     static int V, E, K;
     static List<ArrayList<Edge>> graph;
     static int[] cost;
