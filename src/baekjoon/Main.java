@@ -30,24 +30,21 @@ public class Main {
     }
 
     public static void dijkstra() {
-        int curLocation = 0;
+        int curLocation;
         cost[K - 1] = 0;
         openNode.add(new Edge(K - 1, 0));
-        for (int i = 0; i < V & !openNode.isEmpty(); i++) {
+        while (!openNode.isEmpty()) {
             curLocation = openNode.poll().end;
-            if (closedNode[curLocation]) {
-                i--;
-                continue;
-            }
+            if (closedNode[curLocation]) continue;
+            closedNode[curLocation] = true;
             int currNodeCost = cost[curLocation];
             for (Edge edge : graph.get(curLocation)) {
                 if (edge.weight + currNodeCost < cost[edge.end]) {
                     cost[edge.end] = edge.weight + currNodeCost;
-                    openNode.add(edge);
+                    openNode.add(new Edge(edge.end, cost[edge.end]));
                 }
             }
         }
-        closedNode[curLocation] = true;
     }
 
     public static void main(String[] args) throws IOException {
