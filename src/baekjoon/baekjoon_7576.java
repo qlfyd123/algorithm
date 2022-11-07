@@ -3,18 +3,19 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
+
 /**
  * @see <a href="https://www.acmicpc.net/problem/7576">백준 7576</a>
- * */
+ */
 public class baekjoon_7576 {
     static int x, y;
-    static int[][] matrix;
+    static boolean[][] matrix;
     static int count = 0;
     static int maxTomato;
-    static Queue<Location> location = new LinkedList<>();
+    static List<Location> location = new ArrayList<>();
 
     static class Location {
         int x, y;
@@ -31,18 +32,21 @@ public class baekjoon_7576 {
         StringTokenizer st = new StringTokenizer(br.readLine());
         x = Integer.parseInt(st.nextToken());
         y = Integer.parseInt(st.nextToken());
-        matrix = new int[y][x];
+        matrix = new boolean[y][x];
         maxTomato = x * y;
         for (int i = 0; i < y; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < x; j++) {
                 int temp = Integer.parseInt(st.nextToken());
-                matrix[i][j] = temp;
                 if (temp == 1) {
                     count++;
                     location.add(new Location(j, i));
+                    matrix[i][j] = true;
                 } else if (temp == -1) {
+                    matrix[i][j] = true;
                     maxTomato--;
+                } else {
+                    matrix[i][j] = false;
                 }
             }
         }
@@ -55,22 +59,21 @@ public class baekjoon_7576 {
     }
 
     public static boolean grow() {
-        Queue<Location> queue = new LinkedList<>();
+        List<Location> queue = new ArrayList<>();
         boolean bool = false;
-        while (!location.isEmpty()) {
-            Location node = location.poll();
+        for (Location node : location) {
             for (int i = -1; i <= 1; i += 2) {
                 if (checkRange(node.x, node.y + i)) {
-                    if (matrix[node.y + i][node.x] == 0) {
-                        matrix[node.y + i][node.x] = 1;
+                    if (!matrix[node.y + i][node.x]) {
+                        matrix[node.y + i][node.x] = true;
                         queue.add(new Location(node.x, node.y + i));
                         count++;
                         bool = true;
                     }
                 }
                 if (checkRange(node.x + i, node.y)) {
-                    if (matrix[node.y][node.x + i] == 0) {
-                        matrix[node.y][node.x + i] = 1;
+                    if (!matrix[node.y][node.x + i]) {
+                        matrix[node.y][node.x + i] = true;
                         queue.add(new Location(node.x + i, node.y));
                         count++;
                         bool = true;
