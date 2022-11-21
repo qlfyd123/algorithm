@@ -3,59 +3,31 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static class Item implements Comparable<Item> {
-        int weight, cost;
-        float efficiency;
-
-        public Item(int x, int y) {
-            weight = x;
-            cost = y;
-            efficiency = (float) cost / weight;
-        }
-
-        @Override
-        public int compareTo(Item o) {
-            if (this.efficiency == o.efficiency)
-                return this.weight - o.weight;
-            else if (this.efficiency > o.efficiency) return -1;
-            else return 1;
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
-        Item[] items = new Item[N];
-        for (int i = 0; i < N; i++) {
+        int[] bag = new int[K + 1];
+        for (int j = 0; j < N; j++) {
             st = new StringTokenizer(br.readLine(), " ");
-            Item item = new Item(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
-            items[i] = item;
+            int weight = Integer.parseInt(st.nextToken());
+            int cost = Integer.parseInt(st.nextToken());
+            bag[weight] = Math.max(bag[weight - 1], cost);
         }
-        Arrays.sort(items);
-        int max = 0;
-        int weight, cost;
-        for (int i = 0; i < N; i++) {
-            Item root = items[i];
-            weight = root.weight;
-            cost = root.cost;
-            for (int j = i + 1; j < N; j++) {
-                Item temp = items[j];
-                if (weight + temp.weight <= K) {
-                    cost += temp.cost;
-                    weight += temp.weight;
-                    if (weight == K) {
-                        break;
-                    }
+        for (int i = 1; i < K; i++) {
+            if (bag[i + 1] == 0) {
+                bag[i + 1] = bag[i];
+            } else {
+                if ((i << 1) + 1 <= K) {
+                    bag[2 * i + 1] = bag[i + 1] + bag[i];
                 }
             }
-            max = Math.max(max, cost);
         }
-
-        System.out.println(max);
+        System.out.println(bag[K]);
     }
 }
