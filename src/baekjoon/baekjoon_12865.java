@@ -5,29 +5,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class Main {
+/**
+ * @see <a href="https://www.acmicpc.net/problem/12865"/>백준 12865</a>
+ */
+public class baekjoon_12865 {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
-        int[] bag = new int[K + 1];
-        for (int j = 0; j < N; j++) {
+        int[][] bag = new int[N + 1][K + 1];
+        for (int j = 1; j < N + 1; j++) {
             st = new StringTokenizer(br.readLine(), " ");
             int weight = Integer.parseInt(st.nextToken());
             int cost = Integer.parseInt(st.nextToken());
-            bag[weight] = Math.max(bag[weight - 1], cost);
-        }
-        for (int i = 1; i < K; i++) {
-            if (bag[i + 1] == 0) {
-                bag[i + 1] = bag[i];
-            } else {
-                if ((i << 1) + 1 <= K) {
-                    bag[2 * i + 1] = bag[i + 1] + bag[i];
-                }
+            int[] dp = bag[j];
+            for (int i = 0; i < K + 1; i++) {
+                if (i < weight) dp[i] = bag[j - 1][i];
+                else dp[i] = Math.max(bag[j - 1][i], bag[j - 1][i - weight] + cost);
             }
         }
-        System.out.println(bag[K]);
+        System.out.println(bag[N][K]);
     }
 }
