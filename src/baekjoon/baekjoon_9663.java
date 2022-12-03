@@ -11,11 +11,11 @@ public class baekjoon_9663 {
     static int[] visited;
     static int ans = 0;
 
-    private static boolean isPossible(int Row, int location) {
-        for (int i = 0; i < Row; i++) {
-            if (visited[i] == location) {
+    private static boolean isPossible(int row, int column) {
+        for (int i = 0; i < row; i++) {
+            if (visited[i] == column) {
                 return false;
-            } else if (Math.abs(i - Row) == Math.abs(visited[i] - location)) {
+            } else if (Math.abs(i - row) == Math.abs(visited[i] - column)) {
                 return false;
             }
         }
@@ -23,11 +23,11 @@ public class baekjoon_9663 {
     }
 
     private static void queen(int Row, int index) {
-        visited[Row] = index;
         if (Row == visited.length - 1) {
             ans++;
             return;
         }
+        visited[Row] = index;
         for (int i = 0; i < visited.length; i++) {
             if (isPossible(Row + 1, i)) {
                 queen(Row + 1, i);
