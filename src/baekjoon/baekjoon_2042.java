@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class Main {
+/**
+ * @see <a href="https://www.acmicpc.net/problem/2042">백준2042</a>
+ */
+public class baekjoon_2042 {
     static long[] segmentTree;
     static long[] numbers;
 
@@ -19,16 +22,18 @@ public class Main {
         return segmentTree[nodeIndex];
     }
 
-    private static void update(int index, int value, int nodeIndex, int start, int end) {
-        if (nodeIndex < segmentTree.length) {
-            long previousValue = numbers[index];
-            segmentTree[nodeIndex] += (value - previousValue);
+    private static void update(int index, long value, int nodeIndex, int start, int end) {
+        long previousValue = numbers[index];
+        segmentTree[nodeIndex] += (value - previousValue);
+        if (start != end) {
             int midValue = (start + end) / 2;
             if (index <= midValue) {
                 update(index, value, nodeIndex * 2, start, midValue);
             } else {
                 update(index, value, nodeIndex * 2 + 1, midValue + 1, end);
             }
+        } else {
+            numbers[index] = value;
         }
     }
 
@@ -68,8 +73,8 @@ public class Main {
             boolean exchange = st2.nextToken().equals("1");
             if (exchange) {
                 int index = Integer.parseInt(st2.nextToken());
-                int value = Integer.parseInt(st2.nextToken());
-                update(index, value, 1, 1, segmentTree.length - 1);
+                long value = Long.parseLong(st2.nextToken());
+                update(index, value, 1, 1, numbers.length - 1);
                 M--;
             } else {
                 int start = Integer.parseInt(st2.nextToken());
