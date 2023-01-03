@@ -70,8 +70,7 @@ public class baekjoon_2042 {
         setTree(1, numbers.length - 1, 1);
         while (M > 0 | K > 0) {
             StringTokenizer st2 = new StringTokenizer(br.readLine(), " ");
-            boolean exchange = st2.nextToken().equals("1");
-            if (exchange) {
+            if (st2.nextToken().equals("1")) {
                 int index = Integer.parseInt(st2.nextToken());
                 long value = Long.parseLong(st2.nextToken());
                 update(index, value, 1, 1, numbers.length - 1);
@@ -86,3 +85,4 @@ public class baekjoon_2042 {
         }
     }
 }
+//[0, 1, 3, 3, 10, 5]
