@@ -5,61 +5,64 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-enum BALLCOLOR {
-    RED, BLUE
+class Ball {
+    int row, column;
+
+    public Ball(int row, int column) {
+        this.row = row;
+        this.column = column;
+    }
 }
 
-// TODO: 2023-01-09 공 움직이는 함수 구현,play함수 재귀적 호출 
-public class Main {
-    static int[] redBall;
-    static int[] blueBall;
-    final static int[][] direction = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+class Board {
 
-    enum DIRECTION {
-        UP, DOWN, LEFT, RIGHT
-    }
+    final String[][] board;
+    boolean[][] visited;
+    Ball red, blue;
 
-    public static void play(String[][] board, boolean[][] visited) {
-        try {
-            for (int i = 0; i < 4; i++) {
-                int[] dir = direction[i];
-
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-
-        }
-    }
-
-    public static boolean move(BALLCOLOR color){
-        
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        String[][] board;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public Board(BufferedReader br) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
         int row, column;
         row = Integer.parseInt(st.nextToken());
         column = Integer.parseInt(st.nextToken());
         board = new String[row][column];
-        boolean[][] visited = new boolean[row][column];
+        visited = new boolean[row][column];
         for (int i = 0; i < row; i++) {
             StringTokenizer line = new StringTokenizer(br.readLine());
             for (int j = 0; j < column; j++) {
                 String token = line.nextToken();
-                board[i][j] = token;
-                if (token.equals("R")) {
-                    redBall = new int[2];
-                    redBall[0] = i;
-                    redBall[1] = j;
-                } else if (token.equals("B")) {
-                    blueBall = new int[2];
-                    blueBall[0] = i;
-                    blueBall[1] = j;
+                if (token.equals(",")) {
+                    board[i][j] = token;
+                } else {
+                    if (token.equals("R")) {
+                        red = new Ball(i, j);
+                    } else if (token.equals("B")) {
+                        blue = new Ball(i, j);
+                    }
+                    board[i][j] = ",";
                 }
             }
         }
+    }
+
+    private void move(Ball red, Ball blue, int count) {
+        int[] x = {0, 0, 1, -1};
+        int[] y = {1, -1, 0, 0};
+        for (int i = 0; i < 4; i++) {
+            int distance = 1;
+            while (board[red.row + x[i] * distance][red.column + y[i] * distance].equals(",")) {
+                distance++;
+            }
+            Ball nextRedBall = new Ball(red.row + (distance - 1) * x[i], red.column + y[i] * (distance - 1));
+            Ball nextBlueBall = new Ball(blue.row + (distance - 1) * x[i], blue.column + y[i] * (distance - 1));
+            move(nextRedBall, nextBlueBall, count + 1);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 
     }
