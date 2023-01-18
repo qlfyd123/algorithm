@@ -6,20 +6,7 @@ import java.io.InputStreamReader;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-// TODO: 2023-01-16 아래 테스트 케이스 맞춰서 수정 
-/*
-10 10
-##########
-#.#....###
-#........#
-#........#
-##B..#...#
-#.#......#
-#.#..R...#
-#...O#...#
-#.#....###
-##########
-* */
+// TODO: 2023-01-18 시간초과 
 class Block {
     int row, column;
 
@@ -31,10 +18,12 @@ class Block {
 
 class Ball extends Block {
     int count;
+    boolean[][] visited;
 
-    public Ball(int r, int c, int count) {
+    public Ball(int r, int c, int count, boolean[][] visited) {
         super(r, c);
         this.count = count;
+        this.visited = visited;
     }
 
     public Ball(Block block, int count) {
@@ -42,22 +31,32 @@ class Ball extends Block {
         this.count = count;
     }
 
+    public Ball(Ball ball) {
+        super(ball.row, ball.column);
+        this.count = ball.count + 1;
+        this.visited = ball.visited;
+    }
+
+    public boolean[][] cloneArr() {
+        boolean[][] cloneArr = new boolean[visited.length][visited[0].length];
+        for (int i = 0; i < visited.length; i++) {
+            cloneArr[i] = visited[i].clone();
+        }
+        return cloneArr;
+    }
+
 }
 
 class Board {
     final private String[][] board;
-    final private int row, column;
     final private Block hole;
     int count = Integer.MAX_VALUE;
-    boolean[][][] visited;
 
-    public Board(String[][] board, int row, int column, Block hole) {
+    public Board(String[][] board, Block hole) {
         this.board = board;
-        this.row = row;
-        this.column = column;
         this.hole = hole;
-        visited = new boolean[2][row][column];
     }
+
 
     public void moveBall(Stack<Ball[]> stack) {
         Ball[] balls = stack.pop();
@@ -67,6 +66,16 @@ class Board {
         for (int i = 0; i < 4; i++) {
             Ball nextRedBall = getNextBallLocation(red, i);
             Ball nextBlueBall = getNextBallLocation(blue, i);
+            if (nextRedBall == null & nextBlueBall == null) {
+                continue;
+            } else {
+                if (nextBlueBall == null) {
+                    nextBlueBall = blue;
+                }
+                if (nextRedBall == null) {
+                    nextRedBall = new Ball(red);
+                }
+            }
             boolean isSameLocation = nextRedBall.row == nextBlueBall.row & nextRedBall.column == nextBlueBall.column;
             boolean isRedHole = isHoleIn(red, nextRedBall);
             boolean isBlueHole = isHoleIn(blue, nextBlueBall);
@@ -87,13 +96,11 @@ class Board {
                             nextBlueBall.column -= dy[i];
                         }
                     }
-                    if (visited[0][nextRedBall.row][nextRedBall.column] & visited[1][nextBlueBall.row][nextBlueBall.column]) {
-                        continue;
-                    } else {
-                        visited[0][nextRedBall.row][nextRedBall.column] = true;
-                        visited[1][nextBlueBall.row][nextBlueBall.column] = true;
+                    if (!(nextRedBall.visited[nextRedBall.row][nextRedBall.column] & nextBlueBall.visited[nextBlueBall.row][nextBlueBall.column])) {
+                        nextRedBall.visited[nextRedBall.row][nextRedBall.column] = true;
+                        nextBlueBall.visited[nextBlueBall.row][nextBlueBall.column] = true;
+                        stack.push(new Ball[]{nextRedBall, nextBlueBall});
                     }
-                    stack.push(new Ball[]{nextRedBall, nextBlueBall});
                 }
             }
         }
@@ -119,13 +126,17 @@ class Board {
         while (!board[ball.row + dx[i] * distance][ball.column + dy[i] * distance].equals("#")) {
             distance++;
         }
+        if (distance == 1) {
+            return null;
+        }
         distance--;
-        return new Ball(ball.row + dx[i] * distance, ball.column + dy[i] * distance, ball.count + 1);
+        return new Ball(ball.row + dx[i] * distance, ball.column + dy[i] * distance, ball.count + 1, ball.cloneArr());
     }
+
 }
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[][] board;
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
@@ -139,25 +150,23 @@ public class Main {
             for (int j = 0; j < column; j++) {
                 board[i][j] = line[j];
                 if (board[i][j].equals("R")) {
-                    red = new Ball(i, j, 0);
+                    red = new Ball(i, j, 0, new boolean[row][column]);
                     board[i][j] = ",";
                 } else if (board[i][j].equals("B")) {
-                    blue = new Ball(i, j, 0);
+                    blue = new Ball(i, j, 0, new boolean[row][column]);
                     board[i][j] = ",";
                 } else if (board[i][j].equals("O")) {
                     hole = new Block(i, j);
                 }
             }
         }
-        Board toy = new Board(board, row, column, hole);
+        Board toy = new Board(board, hole);
         Stack<Ball[]> stack = new Stack<>();
         stack.push(new Ball[]{red, blue});
-        toy.visited[0][red.row][red.column] = true;
-        toy.visited[1][blue.row][blue.column] = true;
         while (!stack.isEmpty()) {
             toy.moveBall(stack);
         }
 
-        System.out.println(toy.count == Integer.MAX_VALUE ? -1 : toy.count);
+        System.out.println(toy.count > 10 ? -1 : toy.count);
     }
 }
