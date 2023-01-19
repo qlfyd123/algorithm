@@ -1,12 +1,14 @@
 package baekjoon;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
-// TODO: 2023-01-18 시간초과 
+/**
+ * @see <a href="https://www.acmicpc.net/problem/13460">백준13460</a>
+ */
 class Block {
     int row, column;
 
@@ -18,33 +20,16 @@ class Block {
 
 class Ball extends Block {
     int count;
-    boolean[][] visited;
 
-    public Ball(int r, int c, int count, boolean[][] visited) {
+    public Ball(int r, int c, int count) {
         super(r, c);
-        this.count = count;
-        this.visited = visited;
-    }
-
-    public Ball(Block block, int count) {
-        super(block.row, block.column);
         this.count = count;
     }
 
     public Ball(Ball ball) {
         super(ball.row, ball.column);
         this.count = ball.count + 1;
-        this.visited = ball.visited;
     }
-
-    public boolean[][] cloneArr() {
-        boolean[][] cloneArr = new boolean[visited.length][visited[0].length];
-        for (int i = 0; i < visited.length; i++) {
-            cloneArr[i] = visited[i].clone();
-        }
-        return cloneArr;
-    }
-
 }
 
 class Board {
@@ -58,9 +43,12 @@ class Board {
     }
 
 
-    public void moveBall(Stack<Ball[]> stack) {
-        Ball[] balls = stack.pop();
+    public void moveBall(Queue<Ball[]> queue) {
+        Ball[] balls = queue.poll();
         Ball red = balls[0];
+        if (red.count > 10) {
+            return;
+        }
         Ball blue = balls[1];
         //상,하,좌,우 순서
         for (int i = 0; i < 4; i++) {
@@ -82,6 +70,8 @@ class Board {
             if (!isBlueHole) {
                 if (isRedHole) {
                     count = Math.min(nextRedBall.count, count);
+                    queue.clear();
+                    return;
                 } else {
                     if (isSameLocation) {
                         int redBallMoveDistance = Math.abs(nextRedBall.row - red.row + nextRedBall.column - red.column);
@@ -96,11 +86,11 @@ class Board {
                             nextBlueBall.column -= dy[i];
                         }
                     }
-                    if (!(nextRedBall.visited[nextRedBall.row][nextRedBall.column] & nextBlueBall.visited[nextBlueBall.row][nextBlueBall.column])) {
-                        nextRedBall.visited[nextRedBall.row][nextRedBall.column] = true;
-                        nextBlueBall.visited[nextBlueBall.row][nextBlueBall.column] = true;
-                        stack.push(new Ball[]{nextRedBall, nextBlueBall});
-                    }
+//                    if (!(nextRedBall.visited[nextRedBall.row][nextRedBall.column] & nextBlueBall.visited[nextBlueBall.row][nextBlueBall.column])) {
+//                        nextRedBall.visited[nextRedBall.row][nextRedBall.column] = true;
+//                        nextBlueBall.visited[nextBlueBall.row][nextBlueBall.column] = true;
+                    queue.add(new Ball[]{nextRedBall, nextBlueBall});
+//                    }
                 }
             }
         }
@@ -130,12 +120,12 @@ class Board {
             return null;
         }
         distance--;
-        return new Ball(ball.row + dx[i] * distance, ball.column + dy[i] * distance, ball.count + 1, ball.cloneArr());
+        return new Ball(ball.row + dx[i] * distance, ball.column + dy[i] * distance, ball.count + 1);
     }
 
 }
 
-public class Main {
+public class baekjoon_13460 {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[][] board;
@@ -148,23 +138,28 @@ public class Main {
         for (int i = 0; i < row; i++) {
             String[] line = br.readLine().split("");
             for (int j = 0; j < column; j++) {
-                board[i][j] = line[j];
-                if (board[i][j].equals("R")) {
-                    red = new Ball(i, j, 0, new boolean[row][column]);
-                    board[i][j] = ",";
-                } else if (board[i][j].equals("B")) {
-                    blue = new Ball(i, j, 0, new boolean[row][column]);
-                    board[i][j] = ",";
-                } else if (board[i][j].equals("O")) {
-                    hole = new Block(i, j);
+                switch (line[j]) {
+                    case "R":
+                        red = new Ball(i, j, 0);
+                        board[i][j] = ".";
+                        break;
+                    case "B":
+                        blue = new Ball(i, j, 0);
+                        board[i][j] = ".";
+                        break;
+                    case "O":
+                        hole = new Block(i, j);
+                        board[i][j] = ".";
+                    default:
+                        board[i][j] = line[j];
                 }
             }
         }
         Board toy = new Board(board, hole);
-        Stack<Ball[]> stack = new Stack<>();
-        stack.push(new Ball[]{red, blue});
-        while (!stack.isEmpty()) {
-            toy.moveBall(stack);
+        Queue<Ball[]> queue = new LinkedList<>();
+        queue.add(new Ball[]{red, blue});
+        while (!queue.isEmpty()) {
+            toy.moveBall(queue);
         }
 
         System.out.println(toy.count > 10 ? -1 : toy.count);
