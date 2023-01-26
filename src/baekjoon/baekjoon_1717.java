@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-
-public class Main {
+/**
+* @see <a href="https://www.acmicpc.net/problem/1717">백준1717</a>
+* */
+public class baekjoon_1717 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -34,42 +36,24 @@ public class Main {
         }
     }
 
-    private static boolean isSameUnit(int x, int y, int[] unit) {
-        while (unit[x] != x) {
-            if (unit[x] == y) {
-                return true;
-            }
-            x = unit[x];
-        }
+    private static int findRoot(int value, int[] unit) {
+        return value == unit[value] ? value : findRoot(unit[value], unit);
+    }
 
-        while (unit[y] != y) {
-            y = unit[y];
-        }
-        return x == y;
+    private static boolean isSameUnit(int x, int y, int[] unit) {
+        int xRoot = findRoot(x, unit);
+        int yRoot = findRoot(y, unit);
+        return xRoot == yRoot;
     }
 
     private static void addUnit(int x, int y, int[] unit) {
-        int big = Math.max(x, y);
-        int small = Math.min(x, y);
-        while (unit[big] != big) {
-            big = unit[big];
-            if (y == big | x == big) {
-                return;
-            }
-        }
+        int xRoot = findRoot(x, unit);
+        int yRoot = findRoot(y, unit);
 
-        if (!(small == unit[small] & small < big)) {
-            while (unit[small] != small) {
-                small = unit[small];
-                if (y == small | x == small) {
-                    return;
-                }
-            }
-            if (big < small) {
-                unit[small] = big;
-            } else unit[big] = small;
-        } else {
-            unit[big] = small;
+        if (xRoot > yRoot) {
+            unit[yRoot] = xRoot;
+        } else if (xRoot < yRoot) {
+            unit[xRoot] = yRoot;
         }
     }
 }
