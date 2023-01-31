@@ -18,75 +18,91 @@ public class Main {
                 board[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        backTracking.push(new Board2048(board, 0));
+        backTracking.push(new Board2048(board, 0, 0));
+        int max = 0;
         while (!backTracking.isEmpty()) {
             Board2048 board2048 = backTracking.pop();
+            if (board2048.count == 5) {
+                max = Math.max(max, board2048.max);
+            } else {
+                board2048.nextPlay(backTracking, board2048.count);
+            }
         }
     }
 }
 
 class Board2048 {
-    private int[][] board;
+    int[][] board;
     int count;
+    int max;
 
-    public Board2048(int[][] board, int count) {
+    public Board2048(int[][] board, int count, int max) {
         this.count = count;
         this.board = new int[board.length][board.length];
         for (int i = 0; i < board.length; i++) {
             this.board[i] = board[i].clone();
         }
+        this.max = max;
     }
 
-    public void nextPlay(Stack<Board2048> stack) {
+    public void nextPlay(Stack<Board2048> stack, int count) {
         for (int i = 0; i < 4; i++) {
-            move(i);
+            int[][] movedBoard = move(i);
+            stack.push(new Board2048(movedBoard, count + 1, this.max));
         }
     }
 
-    public int[][] move(int dir) {
-        int[] dx = {1, -1, 0, 0};
-        int[] dy = {0, 0, 1, -1};
+    private int[][] move(int dir) {
+        int[][] movedBoard;
         switch (dir) {
             case 0:
-                up(dir, dx);
+                movedBoard = up();
                 break;
             case 1:
-                down(dir, dx);
+                movedBoard = down();
                 break;
             case 2:
-                right(dir, dy);
+                movedBoard = right();
                 break;
             case 3:
-                left(dir, dy);
+                movedBoard = left();
                 break;
+            default:
+                movedBoard = new int[0][0];
         }
+
+        return movedBoard;
     }
 
-    private void down(int dir, int[] dx) {
-        for (int i = board.length - 1; i > 0; i--) {
-            searchRow(dir, dx, i, getCloneBoard());
-        }
-    }
-
-    private void up(int dir, int[] dx) {
-        for (int i = 0; i < board.length; i++) {
-            searchRow(dir, dx, i, getCloneBoard());
-        }
-    }
-
-
-    private int[][] right(int dir, int[] dy) {
+    private int[][] down() {
         int[][] cloneBoard = getCloneBoard();
-        for (int i = 0; i < board.length; i++) {
-            searchColumn(dir, dy, i, cloneBoard);
+        for (int i = board.length - 1; i > 0; i--) {
+            searchRow(-1, i, cloneBoard);
         }
         return cloneBoard;
     }
 
-    private int[][] left(int dir, int[] dy) {
+    private int[][] up() {
         int[][] cloneBoard = getCloneBoard();
         for (int i = 0; i < board.length; i++) {
-            searchColumn(dir, dy, i, cloneBoard);
+            searchRow(1, i, cloneBoard);
+        }
+        return cloneBoard;
+    }
+
+
+    private int[][] right() {
+        int[][] cloneBoard = getCloneBoard();
+        for (int i = 0; i < board.length; i++) {
+            searchColumn(1, i, cloneBoard);
+        }
+        return cloneBoard;
+    }
+
+    private int[][] left() {
+        int[][] cloneBoard = getCloneBoard();
+        for (int i = 0; i < board.length; i++) {
+            searchColumn(-1, i, cloneBoard);
         }
         return cloneBoard;
     }
@@ -99,39 +115,58 @@ class Board2048 {
         return cloneBoard;
     }
 
-    private void searchRow(int dir, int[] directionArray, int i, int[][] cloneBoard) {
-        for (int j = 0; j < board.length; j++) {
-            if (cloneBoard[i][j] != 0) {
-                int dis = 1;
-                try {
-                    while (cloneBoard[i + directionArray[dir] * dis][j] == 0) {
-                        dis++;
+    private void searchRow(int dir, int index, int[][] cloneBoard) {
+        int start = dir == 1 ? 0 : board.length - 1;
+        int end = dir == 1 ? board.length - 1 : 0;
+        int zeroIndex = -1;
+        while (start != end) {
+            if (zeroIndex == -1) {
+                if (cloneBoard[start][index] == 0) {
+                    zeroIndex = start;
+                }
+            } else {
+                if (cloneBoard[start][index] != 0) {
+                    cloneBoard[zeroIndex][index] = cloneBoard[start][index];
+                    cloneBoard[start][index] = 0;
+                    try {
+                        if (cloneBoard[zeroIndex - dir][index] == cloneBoard[zeroIndex][index]) {
+                            cloneBoard[zeroIndex - dir][index] *= 2;
+                            this.max = Math.max(this.max, cloneBoard[zeroIndex - dir][index]);
+                        } else {
+                            zeroIndex += dir;
+                        }
+                    } catch (IndexOutOfBoundsException ignored) {
                     }
-                } catch (IndexOutOfBoundsException ignored) {
-                } finally {
-                    dis--;
-                    cloneBoard[i + directionArray[dir] * dis][j] = cloneBoard[i][j];
-                    cloneBoard[i][j] = 0;
                 }
             }
+            start += dir;
         }
     }
 
-    private void searchColumn(int dir, int[] directionArray, int i, int[][] cloneBoard) {
-        for (int j = 0; j < board.length; j++) {
-            if (board[i][j] != 0) {
-                int dis = 1;
-                try {
-                    while (board[i][j + directionArray[dir] * dis] == 0) {
-                        dis++;
+    private void searchColumn(int dir, int index, int[][] cloneBoard) {
+        int start = dir == 1 ? board.length - 1 : 0;
+        int end = dir == 1 ? 0 : board.length - 1;
+        int zeroIndex = -1;
+        while (start != end) {
+            if (zeroIndex == -1) {
+                if (cloneBoard[index][start] == 0) {
+                    zeroIndex = start;
+                }
+            } else {
+                if (cloneBoard[index][start] != 0) {
+                    cloneBoard[index][zeroIndex] = cloneBoard[index][start];
+                    cloneBoard[start][index] = 0;
+                    try {
+                        if (cloneBoard[index][zeroIndex - dir] == cloneBoard[index][zeroIndex]) {
+                            cloneBoard[index][zeroIndex - dir] *= 2;
+                        } else {
+                            zeroIndex += dir;
+                        }
+                    } catch (IndexOutOfBoundsException ignored) {
                     }
-                } catch (IndexOutOfBoundsException ignored) {
-                } finally {
-                    dis--;
-                    board[i][j + directionArray[dir] * dis] = board[i][j];
-                    board[i][j] = 0;
                 }
             }
+            start += dir;
         }
     }
 
