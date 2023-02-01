@@ -12,14 +12,15 @@ public class Main {
         Stack<Board2048> backTracking = new Stack<>();
         int size = Integer.parseInt(br.readLine());
         int[][] board = new int[size][size];
+        int max = 0;
         for (int i = 0; i < size; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine(), " ");
             for (int j = 0; j < size; j++) {
                 board[i][j] = Integer.parseInt(st.nextToken());
+                max = Math.max(max, board[i][j]);
             }
         }
-        backTracking.push(new Board2048(board, 0, 0));
-        int max = 0;
+        backTracking.push(new Board2048(board, 0, max));
         while (!backTracking.isEmpty()) {
             Board2048 board2048 = backTracking.pop();
             if (board2048.count == 5) {
@@ -28,6 +29,7 @@ public class Main {
                 board2048.nextPlay(backTracking, board2048.count);
             }
         }
+        System.out.println(max);
     }
 }
 
@@ -56,16 +58,16 @@ class Board2048 {
         int[][] movedBoard;
         switch (dir) {
             case 0:
-                movedBoard = up();
+                movedBoard = moveVertical(true);
                 break;
             case 1:
-                movedBoard = down();
+                movedBoard = moveVertical(false);
                 break;
             case 2:
-                movedBoard = right();
+                movedBoard = moveHorizontal(true);
                 break;
             case 3:
-                movedBoard = left();
+                movedBoard = moveHorizontal(false);
                 break;
             default:
                 movedBoard = new int[0][0];
@@ -74,35 +76,22 @@ class Board2048 {
         return movedBoard;
     }
 
-    private int[][] down() {
+    private int[][] moveVertical(boolean isDirectionUp) {
+        int movement = isDirectionUp ? -1 : 1;
         int[][] cloneBoard = getCloneBoard();
-        for (int i = board.length - 1; i > 0; i--) {
-            searchRow(-1, i, cloneBoard);
+        boolean[][] isUnited = new boolean[cloneBoard.length][cloneBoard.length];
+        for (int i = 0; i < board.length; i++) {
+            searchRow(movement, i, cloneBoard, isUnited);
         }
         return cloneBoard;
     }
 
-    private int[][] up() {
+    private int[][] moveHorizontal(boolean isDirectionLeft) {
+        int movement = isDirectionLeft ? 1 : -1;
         int[][] cloneBoard = getCloneBoard();
+        boolean[][] isUnited = new boolean[cloneBoard.length][cloneBoard.length];
         for (int i = 0; i < board.length; i++) {
-            searchRow(1, i, cloneBoard);
-        }
-        return cloneBoard;
-    }
-
-
-    private int[][] right() {
-        int[][] cloneBoard = getCloneBoard();
-        for (int i = 0; i < board.length; i++) {
-            searchColumn(1, i, cloneBoard);
-        }
-        return cloneBoard;
-    }
-
-    private int[][] left() {
-        int[][] cloneBoard = getCloneBoard();
-        for (int i = 0; i < board.length; i++) {
-            searchColumn(-1, i, cloneBoard);
+            searchColumn(movement, i, cloneBoard, isUnited);
         }
         return cloneBoard;
     }
@@ -115,59 +104,55 @@ class Board2048 {
         return cloneBoard;
     }
 
-    private void searchRow(int dir, int index, int[][] cloneBoard) {
+    private void searchRow(int dir, int index, int[][] cloneBoard, boolean[][] isUnited) {
         int start = dir == 1 ? 0 : board.length - 1;
-        int end = dir == 1 ? board.length - 1 : 0;
         int zeroIndex = -1;
-        while (start != end) {
-            if (zeroIndex == -1) {
-                if (cloneBoard[start][index] == 0) {
-                    zeroIndex = start;
+        while (start < board.length & start >= 0) {
+            zeroIndex = getZeroIndex(index, cloneBoard, start, zeroIndex);
+            try {
+                if (cloneBoard[start - dir][index] == cloneBoard[start][index] & !isUnited[start - dir][index]) {
+                    cloneBoard[start - dir][index] *= 2;
+                    cloneBoard[index][start] = 0;
+                    this.max = Math.max(this.max, cloneBoard[start - dir][index]);
+                    isUnited[start - dir][index] = true;
                 }
-            } else {
-                if (cloneBoard[start][index] != 0) {
-                    cloneBoard[zeroIndex][index] = cloneBoard[start][index];
-                    cloneBoard[start][index] = 0;
-                    try {
-                        if (cloneBoard[zeroIndex - dir][index] == cloneBoard[zeroIndex][index]) {
-                            cloneBoard[zeroIndex - dir][index] *= 2;
-                            this.max = Math.max(this.max, cloneBoard[zeroIndex - dir][index]);
-                        } else {
-                            zeroIndex += dir;
-                        }
-                    } catch (IndexOutOfBoundsException ignored) {
-                    }
-                }
+            } catch (IndexOutOfBoundsException ignored) {
             }
             start += dir;
         }
     }
 
-    private void searchColumn(int dir, int index, int[][] cloneBoard) {
-        int start = dir == 1 ? board.length - 1 : 0;
-        int end = dir == 1 ? 0 : board.length - 1;
+    private void searchColumn(int dir, int index, int[][] cloneBoard, boolean[][] isUnited) {
+        int start = dir == 1 ? 0 : board.length - 1;
         int zeroIndex = -1;
-        while (start != end) {
-            if (zeroIndex == -1) {
-                if (cloneBoard[index][start] == 0) {
+        while (start < board.length & start >= 0) {
+            zeroIndex = getZeroIndex(start, cloneBoard, index, zeroIndex);
+            try {
+                if (cloneBoard[index][start - dir] == cloneBoard[index][start] & !isUnited[index][start - dir]) {
+                    cloneBoard[index][start - dir] *= 2;
+                    cloneBoard[index][start] = 0;
                     zeroIndex = start;
+                    this.max = Math.max(this.max, cloneBoard[start - dir][index]);
+                    isUnited[index][start - dir] = true;
                 }
-            } else {
-                if (cloneBoard[index][start] != 0) {
-                    cloneBoard[index][zeroIndex] = cloneBoard[index][start];
-                    cloneBoard[start][index] = 0;
-                    try {
-                        if (cloneBoard[index][zeroIndex - dir] == cloneBoard[index][zeroIndex]) {
-                            cloneBoard[index][zeroIndex - dir] *= 2;
-                        } else {
-                            zeroIndex += dir;
-                        }
-                    } catch (IndexOutOfBoundsException ignored) {
-                    }
-                }
+            } catch (IndexOutOfBoundsException ignored) {
             }
             start += dir;
         }
+    }
+
+    private static int getZeroIndex(int index, int[][] cloneBoard, int start, int zeroIndex) {
+        if (zeroIndex == -1) {
+            if (cloneBoard[start][index] == 0) {
+                zeroIndex = start;
+            }
+        } else {
+            if (cloneBoard[start][index] != 0) {
+                cloneBoard[zeroIndex][index] = cloneBoard[start][index];
+                cloneBoard[start][index] = 0;
+            }
+        }
+        return zeroIndex;
     }
 
 
