@@ -77,7 +77,7 @@ class Board2048 {
     }
 
     private int[][] moveVertical(boolean isDirectionUp) {
-        int movement = isDirectionUp ? -1 : 1;
+        int movement = isDirectionUp ? 1 : -1;
         int[][] cloneBoard = getCloneBoard();
         boolean[][] isUnited = new boolean[cloneBoard.length][cloneBoard.length];
         for (int i = 0; i < board.length; i++) {
@@ -112,7 +112,7 @@ class Board2048 {
             try {
                 if (cloneBoard[start - dir][index] == cloneBoard[start][index] & !isUnited[start - dir][index]) {
                     cloneBoard[start - dir][index] *= 2;
-                    cloneBoard[index][start] = 0;
+                    cloneBoard[start][index] = 0;
                     this.max = Math.max(this.max, cloneBoard[start - dir][index]);
                     isUnited[start - dir][index] = true;
                 }
@@ -132,7 +132,7 @@ class Board2048 {
                     cloneBoard[index][start - dir] *= 2;
                     cloneBoard[index][start] = 0;
                     zeroIndex = start;
-                    this.max = Math.max(this.max, cloneBoard[start - dir][index]);
+                    this.max = Math.max(this.max, cloneBoard[index][start - dir]);
                     isUnited[index][start - dir] = true;
                 }
             } catch (IndexOutOfBoundsException ignored) {
@@ -141,6 +141,7 @@ class Board2048 {
         }
     }
 
+    // TODO: 2023-02-01 zeroIndex 값에 dir값을 더하도록 수정
     private static int getZeroIndex(int index, int[][] cloneBoard, int start, int zeroIndex) {
         if (zeroIndex == -1) {
             if (cloneBoard[start][index] == 0) {
@@ -150,6 +151,7 @@ class Board2048 {
             if (cloneBoard[start][index] != 0) {
                 cloneBoard[zeroIndex][index] = cloneBoard[start][index];
                 cloneBoard[start][index] = 0;
+                zeroIndex++;
             }
         }
         return zeroIndex;
