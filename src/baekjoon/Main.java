@@ -108,11 +108,24 @@ class Board2048 {
         int start = dir == 1 ? 0 : board.length - 1;
         int zeroIndex = -1;
         while (start < board.length & start >= 0) {
-            zeroIndex = getZeroIndex(index, cloneBoard, start, zeroIndex);
+            if (zeroIndex == -1) {
+                if (cloneBoard[start][index] == 0) {
+                    zeroIndex = start;
+                }
+            } else {
+                if (cloneBoard[start][index] != 0) {
+                    cloneBoard[zeroIndex][index] = cloneBoard[start][index];
+                    cloneBoard[start][index] = 0;
+                    start = zeroIndex;
+                    zeroIndex += dir;
+
+                }
+            }
             try {
                 if (cloneBoard[start - dir][index] == cloneBoard[start][index] & !isUnited[start - dir][index]) {
                     cloneBoard[start - dir][index] *= 2;
                     cloneBoard[start][index] = 0;
+                    zeroIndex = start;
                     this.max = Math.max(this.max, cloneBoard[start - dir][index]);
                     isUnited[start - dir][index] = true;
                 }
@@ -126,7 +139,17 @@ class Board2048 {
         int start = dir == 1 ? 0 : board.length - 1;
         int zeroIndex = -1;
         while (start < board.length & start >= 0) {
-            zeroIndex = getZeroIndex(start, cloneBoard, index, zeroIndex);
+            if (zeroIndex == -1) {
+                if (cloneBoard[index][start] == 0) {
+                    zeroIndex = start;
+                }
+            } else {
+                if (cloneBoard[index][start] != 0) {
+                    cloneBoard[index][zeroIndex] = cloneBoard[index][start];
+                    cloneBoard[index][start] = 0;
+                    zeroIndex += dir;
+                }
+            }
             try {
                 if (cloneBoard[index][start - dir] == cloneBoard[index][start] & !isUnited[index][start - dir]) {
                     cloneBoard[index][start - dir] *= 2;
@@ -140,22 +163,5 @@ class Board2048 {
             start += dir;
         }
     }
-
-    // TODO: 2023-02-01 zeroIndex 값에 dir값을 더하도록 수정
-    private static int getZeroIndex(int index, int[][] cloneBoard, int start, int zeroIndex) {
-        if (zeroIndex == -1) {
-            if (cloneBoard[start][index] == 0) {
-                zeroIndex = start;
-            }
-        } else {
-            if (cloneBoard[start][index] != 0) {
-                cloneBoard[zeroIndex][index] = cloneBoard[start][index];
-                cloneBoard[start][index] = 0;
-                zeroIndex++;
-            }
-        }
-        return zeroIndex;
-    }
-
 
 }
