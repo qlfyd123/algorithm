@@ -3,13 +3,13 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        Stack<Board2048> backTracking = new Stack<>();
         int size = Integer.parseInt(br.readLine());
         int[][] board = new int[size][size];
         int max = 0;
@@ -20,148 +20,62 @@ public class Main {
                 max = Math.max(max, board[i][j]);
             }
         }
-        backTracking.push(new Board2048(board, 0, max));
-        while (!backTracking.isEmpty()) {
-            Board2048 board2048 = backTracking.pop();
-            if (board2048.count == 5) {
-                max = Math.max(max, board2048.max);
-            } else {
-                board2048.nextPlay(backTracking, board2048.count);
+        Queue<Board> boards = new LinkedList<>();
+        boards.add(new Board(max, 0, board));
+        while (!boards.isEmpty()) {
+            Board play = boards.poll();
+            for (int i = 0; i < 4; i++) {
+                move(i, play);
             }
         }
-        System.out.println(max);
     }
-}
 
-class Board2048 {
-    int[][] board;
-    int count;
-    int max;
-
-    public Board2048(int[][] board, int count, int max) {
-        this.count = count;
-        this.board = new int[board.length][board.length];
-        for (int i = 0; i < board.length; i++) {
-            this.board[i] = board[i].clone();
+    public static Board move(int direction, Board boardGame) {
+        int start = 0, dir = 0;
+        switch (direction) {
+            case 0, 2:
+                start = 0;
+                dir = 1;
+                searchHorizontally(start, dir, boardGame.board);
+            case 1, 3:
+                start = boardGame.board.length;
+                dir = -1;
         }
-        this.max = max;
+
     }
 
-    public void nextPlay(Stack<Board2048> stack, int count) {
+    public static int[][] searchHorizontally(int start, int dir, int[][] board) {
+        int[][] nextBoard = new int[board.length][board.length];
+        boolean[][] isUnited = new boolean[board.length][board.length];
         for (int i = 0; i < 4; i++) {
-            int[][] movedBoard = move(i);
-            stack.push(new Board2048(movedBoard, count + 1, this.max));
-        }
-    }
-
-    private int[][] move(int dir) {
-        int[][] movedBoard;
-        switch (dir) {
-            case 0:
-                movedBoard = moveVertical(true);
-                break;
-            case 1:
-                movedBoard = moveVertical(false);
-                break;
-            case 2:
-                movedBoard = moveHorizontal(true);
-                break;
-            case 3:
-                movedBoard = moveHorizontal(false);
-                break;
-            default:
-                movedBoard = new int[0][0];
-        }
-
-        return movedBoard;
-    }
-
-    private int[][] moveVertical(boolean isDirectionUp) {
-        int movement = isDirectionUp ? 1 : -1;
-        int[][] cloneBoard = getCloneBoard();
-        boolean[][] isUnited = new boolean[cloneBoard.length][cloneBoard.length];
-        for (int i = 0; i < board.length; i++) {
-            searchRow(movement, i, cloneBoard, isUnited);
-        }
-        return cloneBoard;
-    }
-
-    private int[][] moveHorizontal(boolean isDirectionLeft) {
-        int movement = isDirectionLeft ? 1 : -1;
-        int[][] cloneBoard = getCloneBoard();
-        boolean[][] isUnited = new boolean[cloneBoard.length][cloneBoard.length];
-        for (int i = 0; i < board.length; i++) {
-            searchColumn(movement, i, cloneBoard, isUnited);
-        }
-        return cloneBoard;
-    }
-
-    private int[][] getCloneBoard() {
-        int[][] cloneBoard = new int[board.length][board.length];
-        for (int j = 0; j < board.length; j++) {
-            cloneBoard[j] = board[j].clone();
-        }
-        return cloneBoard;
-    }
-
-    private void searchRow(int dir, int index, int[][] cloneBoard, boolean[][] isUnited) {
-        int start = dir == 1 ? 0 : board.length - 1;
-        int zeroIndex = -1;
-        while (start < board.length & start >= 0) {
-            if (zeroIndex == -1) {
-                if (cloneBoard[start][index] == 0) {
-                    zeroIndex = start;
+            int row = start;
+            int index = start;
+            while (row < board.length & row >= 0) {
+                try {
+                    if (board[row][i] != 0) {
+                        nextBoard[index][i] = board[row][i];
+                        if (nextBoard[index - dir][i] == nextBoard[index][i] & !isUnited[index - dir][i]) {
+                            nextBoard[index - dir][i] *= 2;
+                            isUnited[index - dir][i] = true;
+                        } else {
+                            index += dir;
+                        }
+                    }
+                } catch (IndexOutOfBoundsException ignored) {
                 }
-            } else {
-                if (cloneBoard[start][index] != 0) {
-                    cloneBoard[zeroIndex][index] = cloneBoard[start][index];
-                    cloneBoard[start][index] = 0;
-                    start = zeroIndex;
-                    zeroIndex += dir;
-
-                }
+                row += dir;
             }
-            try {
-                if (cloneBoard[start - dir][index] == cloneBoard[start][index] & !isUnited[start - dir][index]) {
-                    cloneBoard[start - dir][index] *= 2;
-                    cloneBoard[start][index] = 0;
-                    zeroIndex = start;
-                    this.max = Math.max(this.max, cloneBoard[start - dir][index]);
-                    isUnited[start - dir][index] = true;
-                }
-            } catch (IndexOutOfBoundsException ignored) {
-            }
-            start += dir;
         }
     }
 
-    private void searchColumn(int dir, int index, int[][] cloneBoard, boolean[][] isUnited) {
-        int start = dir == 1 ? 0 : board.length - 1;
-        int zeroIndex = -1;
-        while (start < board.length & start >= 0) {
-            if (zeroIndex == -1) {
-                if (cloneBoard[index][start] == 0) {
-                    zeroIndex = start;
-                }
-            } else {
-                if (cloneBoard[index][start] != 0) {
-                    cloneBoard[index][zeroIndex] = cloneBoard[index][start];
-                    cloneBoard[index][start] = 0;
-                    zeroIndex += dir;
-                }
-            }
-            try {
-                if (cloneBoard[index][start - dir] == cloneBoard[index][start] & !isUnited[index][start - dir]) {
-                    cloneBoard[index][start - dir] *= 2;
-                    cloneBoard[index][start] = 0;
-                    zeroIndex = start;
-                    this.max = Math.max(this.max, cloneBoard[index][start - dir]);
-                    isUnited[index][start - dir] = true;
-                }
-            } catch (IndexOutOfBoundsException ignored) {
-            }
-            start += dir;
+    static class Board {
+        int max, count;
+        int[][] board;
+
+        public Board(int max, int count, int[][] board) {
+            this.max = max;
+            this.count = count;
+            this.board = board;
         }
     }
-
 }
