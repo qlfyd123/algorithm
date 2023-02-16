@@ -3,12 +3,13 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.Arrays;
 import java.util.StringTokenizer;
-
-public class Main {
+/**
+ * @see <a href="https://www.acmicpc.net/problem/1520">BOJ1520 내리막길</a>
+* */
+public class BOJ1520 {
     static int[][] map;
-    static Stack<int[]> bfs;
     static int[][] routeCount;
     static int endRow, endColumn;
     static final int[] dx = {0, 0, 1, -1};
@@ -23,27 +24,35 @@ public class Main {
         routeCount = new int[endRow][endColumn];
         for (int i = 0; i < endRow; i++) {
             st = new StringTokenizer(br.readLine());
+            Arrays.fill(routeCount[i], -1);
             for (int j = 0; j < endColumn; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        System.out.println(downHill(0, 0));
+        downHill(0, 0);
+        System.out.println(routeCount[0][0]);
     }
 
     public static int downHill(int row, int column) {
-        if (row == endRow & column == endColumn) {
+        if (row == endRow - 1 & column == endColumn - 1) {
+            routeCount[row][column] = 1;
             return 1;
         }
+        routeCount[row][column] = 0;
         int count = 0;
         for (int i = 0; i < 4; i++) {
             try {
-                if ((map[row][column] > map[row + dx[i]][column + dy[i]])) {
-                    count += downHill(row + dx[i], column + dy[i]);
+                if (map[row][column] > map[row + dx[i]][column + dy[i]]) {
+                    if (routeCount[row + dx[i]][column + dy[i]] == -1) {
+                        count += downHill(row + dx[i], column + dy[i]);
+                    } else {
+                        count += routeCount[row + dx[i]][column + dy[i]];
+                    }
                 }
             } catch (ArrayIndexOutOfBoundsException ignored) {
 
             }
         }
-        return count;
+        return routeCount[row][column] += count;
     }
 }
