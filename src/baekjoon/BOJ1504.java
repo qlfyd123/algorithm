@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class Main {
+/**
+ * @see <a href="https://www.acmicpc.net/problem/1504">BOJ1504 특정한 최단 경로</a>
+ */
+public class BOJ1504 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -43,7 +46,7 @@ public class Main {
             }
         }
         long minCost = Integer.MAX_VALUE;
-        minCost = Math.min(minCost, graph[V1][V2] + Math.min((long) (graph[V1][N] + graph[1][V2]), (long) (graph[1][V1] + graph[V2][N])));
+        minCost = Math.min(minCost, graph[V1][V2] + Math.min((long) graph[V1][N] + (long) graph[1][V2], (long) graph[1][V1] + (long) graph[V2][N]));
         minCost = Math.min(minCost, 2L * graph[1][V1] + graph[1][V2] + graph[V2][N]);
         minCost = Math.min(minCost, 2L * graph[1][V2] + graph[1][V1] + graph[V1][N]);
 
