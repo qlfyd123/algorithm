@@ -66,7 +66,7 @@
       <recent name="baekjoon" />
     </key>
   </component>
-  <component name="RunManager" selected="애플리케이션.Main">
+  <component name="RunManager" selected="Application.baekjoon_1107">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="baekjoon.Main" />
       <module name="algorithm" />
@@ -126,15 +126,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="애플리케이션.Main" />
-        <item itemvalue="Java 스크래치.Scratch" />
-        <item itemvalue="애플리케이션.baekjoon_2580" />
-        <item itemvalue="애플리케이션.baekjoon_9663" />
-        <item itemvalue="애플리케이션.baekjoon_1107" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
