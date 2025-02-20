@@ -5,7 +5,7 @@ import java.io.BufferedWriter
 
 /**
  * BOJ 1010번: 다리 놓기(1010)
- * @see <a href="https://www.acmicpc.net/problem/1010">
+ * <a href="https://www.acmicpc.net/problem/1010">
  * */
 fun main() {
     val br = BufferedReader(System.`in`.reader())
@@ -20,7 +20,11 @@ fun main() {
     bw.flush()
     bw.close()
 }
-
+/**
+ * @param x: 왼쪽 사이드 갯수
+ * @param y: 오른쪽 사이드 갯수
+ * @param dpArray: 메모이제이션을 위한 2차원 배열
+ * */
 fun bridge(x: Int, y: Int, dpArray: Array<Array<Int>>): Int {
     return when (x) {
         1 -> y
