@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class BOJ9205 {
+public class Main {
 
     private static final int MAX_BEER = 20;
 
