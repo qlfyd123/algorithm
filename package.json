@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "boj-cli": "^1.0.0"
+  }
+}
