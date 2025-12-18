@@ -35,7 +35,7 @@ public class Main {
             if (type == 1) {
                 tree.updateTree(source, dest);
             } else {
-                sb.append(tree.getRangeMultiple(source, dest)).append("\n");
+                sb.append(tree.query(source, dest)).append("\n");
             }
         }
 
@@ -45,68 +45,67 @@ public class Main {
     private static class SegmentTree {
         private static final int MOD = 1_000_000_007;
         long[] tree;
+        int n;
 
         public SegmentTree(int[] numbers) {
+            this.n = numbers.length;
             int size = 1;
             while (size < numbers.length) {
                 size *= 2;
             }
             tree = new long[size * 2];
-            Arrays.fill(tree, -1);
-            int index = tree.length / 2;
-            for (int i = 0; i < numbers.length; i++, index++) {
-                tree[index] = numbers[i];
-            }
-            buildTree(1);
+            Arrays.fill(tree, 1);
+            buildTree(numbers, 1, 1, numbers.length);
         }
 
-        private void buildTree(int node) {
-            if (!isLeafNode(node)) {
-                buildTree(node * 2);
-                buildTree(node * 2 + 1);
-                long left = this.tree[node * 2] == -1 ? 1 : this.tree[node * 2];
-                long right = this.tree[node * 2 + 1] == -1 ? 1 : this.tree[node * 2 + 1];
-                this.tree[node] = (left * right) % MOD;
+        private void buildTree(int[] numbers, int node, int start, int end) {
+            if (start == end) {
+                this.tree[node] = numbers[start - 1];
+            } else {
+                int mid = (start + end) / 2;
+                buildTree(numbers, node * 2, start, mid);
+                buildTree(numbers, node * 2 + 1, mid + 1, end);
+                this.tree[node] = (this.tree[node * 2 + 1] * this.tree[node * 2]) % MOD;
             }
         }
 
         public void updateTree(int index, int value) {
-            int targetNode = tree.length / 2 + index - 1;
-            this.tree[targetNode] = value;
-            updateNode(targetNode);
+            updateNode(1, 1, n, index, value);
         }
 
-        private void updateNode(int node) {
-            if (node == 0) {
-                return;
-            }
+        private void updateNode(int node, int start, int end, int index, int value) {
+            if (start == end) {
+                this.tree[node] = value;
+            } else {
+                int mid = (start + end) / 2;
 
-            if (!isLeafNode(node)) {
+                if (index > mid) {
+                    updateNode(node * 2 + 1, mid + 1, end, index, value);
+                } else {
+                    updateNode(node * 2, start, mid, index, value);
+                }
+
                 this.tree[node] = (this.tree[node * 2] * this.tree[node * 2 + 1]) % MOD;
             }
-            updateNode(node / 2);
         }
 
-        private boolean isLeafNode(int node) {
-            return this.tree.length / 2 <= node;
+        public long query(int start, int end) {
+            return query(1, 1, this.n, start, end);
         }
 
-        public long getRangeMultiple(int start, int end) {
-            return getFragmentValue(start, end, 1, tree.length / 2, 1);
-        }
-
-        private long getFragmentValue(int start, int end, int nodeRangeStart, int nodeRangeEnd, int node) {
-            if (start == nodeRangeStart && end == nodeRangeEnd) {
+        private long query(int node, int start, int end, int left, int right) {
+            int mid = (start + end) / 2;
+            if (left <= start && right >= end) {
                 return this.tree[node];
             }
-            int mid = (nodeRangeStart + nodeRangeEnd) / 2;
-            if (end <= mid) {
-                return getFragmentValue(start, end, nodeRangeStart, mid, node * 2);
-            } else if (start > mid) {
-                return getFragmentValue(start, end, mid + 1, nodeRangeEnd, node * 2 + 1);
+            if (left > mid) {
+                return query(node * 2 + 1, mid + 1, end, left, right);
+            } else if (right <= mid) {
+                return query(node * 2, start, mid, left, right);
             } else {
-                return (getFragmentValue(start, mid, nodeRangeStart, mid, node * 2) *
-                        getFragmentValue(mid + 1, end, mid + 1, nodeRangeEnd, node * 2 + 1)) % MOD;
+                long leftRangeQuery = query(node * 2, start, mid, left, mid);
+                long rightRangeQuery = query(node * 2 + 1, mid + 1, end, mid + 1, right);
+                return (leftRangeQuery * rightRangeQuery) % MOD;
             }
         }
     }
